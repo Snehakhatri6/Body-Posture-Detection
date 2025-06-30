@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<script>
+  // Redirect to login if not authenticated
+  if (!localStorage.getItem('sessionToken')) {
+    window.location.href = 'login.html';
+  }
+</script>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Exercise - PosturePro</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .upload-section {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .upload-btn {
+            background-color: #007BFF;
+            color: #fff;
+            font-size: 18px;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .upload-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <div class="container">
+        <h1>PosturePro</h1>
+        <nav class="nav">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="index.html">Logout</a>
+            <a href="contact.html">Contact Us</a>
+        </nav>
+    </div>
+</div>
+
+<!-- Main Section -->
+<div class="main">
+    <div class="container">
+        <h2>Upload Your Exercise Video</h2>
+        <div class="upload-section">
+            <input type="file" id="videoUpload" accept="video/*" style="display: none;">
+            <button class="upload-btn" id="uploadBtn">
+                <i class="fas fa-upload"></i> Upload Video
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+    <div class="container">
+        <nav class="nav">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact Us</a>
+        </nav>
+        <p>&copy; 2024 PosturePro. All rights reserved.</p>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function handleVideoUpload() {
+        const fileInput = document.getElementById('videoUpload');
+        const file = fileInput.files[0];
+        if (file) {
+            alert('Video uploaded: ' + file.name);
+            // Logic to upload or preview video goes here
+        }
+    }
+</script>
+
+<div id="result" style="text-align:center; margin-top:30px;"></div>
+<script>
+document.getElementById('uploadBtn').onclick = function(e) {
+    e.preventDefault();
+    document.getElementById('videoUpload').click();
+};
+document.getElementById('videoUpload').onchange = async function() {
+    const fileInput = this;
+    if (!fileInput.files.length) return;
+    const formData = new FormData();
+    formData.append('video', fileInput.files[0]);
+    document.getElementById('result').innerHTML = 'Processing...';
+    try {
+        const response = await fetch('http://localhost:5000/api/upload-exercise', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await response.json();
+        if (data.success) {
+            document.getElementById('result').innerHTML =
+                `<video src="http://localhost:5000${data.output_video}" controls width="400"></video>`;
+        } else {
+            document.getElementById('result').innerHTML = '';
+            alert(data.message || "Processing failed.");
+        }
+    } catch (err) {
+        document.getElementById('result').innerHTML = '';
+        alert("An error occurred while uploading or processing the video.");
+    }
+};
+</script>
+<script>
+document.getElementById('uploadBtn').onclick = function(e) {
+    e.preventDefault();
+    document.getElementById('videoUpload').click();
+};
+document.getElementById('videoUpload').onchange = async function() {
+    const fileInput = this;
+    if (!fileInput.files.length) return;
+    const formData = new FormData();
+    formData.append('video', fileInput.files[0]);
+    document.getElementById('result').innerHTML = 'Processing...';
+    try {
+        const response = await fetch('http://localhost:5000/api/upload-exercise', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await response.json();
+        if (data.success) {
+            document.getElementById('result').innerHTML =
+                `<video src="http://localhost:5000${data.output_video}" controls width="400" style="margin-top:20px;"></video>`;
+        } else {
+            document.getElementById('result').innerHTML = '';
+            alert(data.message || "Processing failed.");
+        }
+    } catch (err) {
+        document.getElementById('result').innerHTML = '';
+        alert("An error occurred while uploading or processing the video.");
+    }
+};
+</script>
+</body>
+</html>
